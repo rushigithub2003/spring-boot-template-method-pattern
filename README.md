@@ -1,15 +1,18 @@
 # Document Processing System — Template Method Design Pattern
 
-A Spring Boot project demonstrating the **Template Method Design Pattern** through a document processing system. The project aims to reduce code duplication by defining a common processing workflow in an abstract class while allowing subclasses to implement document-specific operations.
+A Java Spring Boot project demonstrating the **Template Method Design Pattern** through a document processing system supporting PDF, Excel, and Word document types.
+
+The project uses an interface, an abstract class, and concrete implementations to demonstrate code reusability and method overriding. It also uses a factory class to create the appropriate document service based on the requested document type.
 
 ## Features
 
 - Demonstrates the Template Method Design Pattern.
-- Uses an abstract class to define a common document processing workflow.
+- Uses an interface to define a common document service contract.
+- Uses an abstract class to implement common functionality.
+- Reuses the `readDataFromDb()` method across document implementations.
 - Supports PDF, Excel, and Word document processing.
-- Promotes code reusability and separation of responsibilities.
-- Exposes REST APIs using Spring Boot.
-- Demonstrates object-oriented programming concepts in Java.
+- Uses a factory class to create document service objects.
+- Exposes REST API endpoints using Spring Boot.
 
 ## Technologies Used
 
@@ -18,49 +21,64 @@ A Spring Boot project demonstrating the **Template Method Design Pattern** throu
 - Spring Web
 - Maven
 - REST API
+- Object-Oriented Programming (OOP)
 - Template Method Design Pattern
+- Factory Design Pattern
 
-## Design Pattern Overview
+## Design Pattern Implementation
 
-The Template Method Design Pattern defines the skeleton of an algorithm in a method, allowing subclasses to customize specific steps without changing the overall algorithm structure.
+### 1. DocumentService
 
-In this project, the common document processing steps are defined in an abstract class, while subclasses provide document-specific implementations.
+An interface that defines the common operations:
 
-### Processing Workflow
+- `readDataFromDb()`
+- `processData()`
+- `printData()`
 
-1. Read data.
-2. Process data.
-3. Generate or print the document.
+### 2. DocumentServiceAB
 
-The overall processing sequence remains consistent, while individual steps can differ according to the document type.
+An abstract class that implements `DocumentService` and provides the common implementation of `readDataFromDb()`.
 
-## Supported Document Types
+Concrete classes inherit this implementation instead of duplicating the same code.
 
-| Document Type | Purpose                 |
-| ------------- | ----------------------- |
-| PDF           | Process PDF documents   |
-| Excel         | Process Excel documents |
-| Word          | Process Word documents  |
+### 3. Concrete Implementations
 
-> Note: The project demonstrates document processing logic. Actual PDF, Excel, or Word file generation depends on the implementation.
+The following classes extend `DocumentServiceAB`:
 
-## Project Structure
+- `PdfDocumentServiceImpl`
+- `ExcelDocumentServiceImpl`
+- `WordDocumentServiceImpl`
 
-```text
-document-processing-system-using-tdp/
-├── src/
-│   ├── main/
-│   │   ├── java/
-│   │   │   └── com/example/documentprocessing/
-│   │   │       ├── controller/
-│   │   │       ├── service/
-│   │   │       ├── DocumentProcessingSystemApplication.java
-│   │   └── resources/
-│   │       └── application.properties
-│   └── test/
-├── .gitignore
-├── mvnw
-├── mvnw.cmd
-├── pom.xml
-└── README.md
+Each class implements its own `processData()` and `printData()` methods.
+
+### 4. DocumentFactory
+
+The factory class creates the appropriate document service based on the requested type.
+
+### 5. DocumentController
+
+The REST controller accepts the document type through a URL path variable and invokes the appropriate service methods.
+
+## Processing Workflow
+
+The application follows this sequence:
+
+1. Receive a document type through a REST API request.
+2. Create the appropriate service object using `DocumentFactory`.
+3. Read data from the database (currently simulated using console output).
+4. Process the data according to the document type.
+5. Print the document processing message and return the response.
+
+## API Endpoints
+
+| HTTP Method | Endpoint       | Description               |
+| ----------- | -------------- | ------------------------- |
+| GET         | `/print/pdf`   | Process a PDF document    |
+| GET         | `/print/excel` | Process an Excel document |
+| GET         | `/print/word`  | Process a Word document   |
+
+### Example Request
+
+```http
+GET http://localhost:8081/print/pdf
 ```
